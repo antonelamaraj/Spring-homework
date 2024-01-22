@@ -16,7 +16,7 @@ public class PostCategoryDaoImpl implements PostCategoryDao{
 
     public static String GET_POST_CATEGORIES_BY_POST_ID_AND_CATEGORY_ID = "SELECT c.id, c.name, c.date_created, c.date_modified " +
             "FROM categories c join Post_Categories pc ON c.id = pc.category_id" +
-            "WHERE pc.post_id=?&&pc.category_id=?";
+            "WHERE pc.post_id=?AND pc.category_id=?";
 
     @Override
     public PostCategories getPostGategoryByPostId(Long postId) {
