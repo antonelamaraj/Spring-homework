@@ -1,6 +1,7 @@
 package com.ikub.jdbc.springbootjdbc.service;
 
 import com.ikub.jdbc.springbootjdbc.entity.Post;
+import com.ikub.jdbc.springbootjdbc.entity.User;
 
 import java.util.List;
 

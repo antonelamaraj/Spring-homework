@@ -1,9 +1,11 @@
 package com.ikub.jdbc.springbootjdbc.service;
 
-import com.ikub.jdbc.springbootjdbc.entity.PostCategories;
+import com.ikub.jdbc.springbootjdbc.entity.Category;
+import com.ikub.jdbc.springbootjdbc.entity.Post;
+import com.ikub.jdbc.springbootjdbc.entity.PostCategory;
 
 public interface PostCategoryService {
-    PostCategories getPostGategoryByPostId(Long postId);
-    PostCategories getPostCategoryByPostIdAndCategoryId(Long postId, Long
+    PostCategory getPostGategoryByPostId(Long postId);
+    PostCategory getPostCategoryByPostIdAndCategoryId(Long postId, Long
             categoryId);
 }

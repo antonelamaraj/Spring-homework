@@ -1,14 +1,16 @@
-package com.ikub.jdbc.springbootjdbc.service;
+package com.ikub.jdbc.springbootjdbc.service.impl;
 
 import com.ikub.jdbc.springbootjdbc.entity.Post;
 import com.ikub.jdbc.springbootjdbc.repository.PostDao;
+import com.ikub.jdbc.springbootjdbc.entity.User;
+import com.ikub.jdbc.springbootjdbc.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostDao postDao;

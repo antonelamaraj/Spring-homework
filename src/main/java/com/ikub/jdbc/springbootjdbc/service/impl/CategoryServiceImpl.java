@@ -1,7 +1,8 @@
-package com.ikub.jdbc.springbootjdbc.service;
+package com.ikub.jdbc.springbootjdbc.service.impl;
 
-import com.ikub.jdbc.springbootjdbc.entity.Categories;
+import com.ikub.jdbc.springbootjdbc.entity.Category;
 import com.ikub.jdbc.springbootjdbc.repository.CategoryDao;
+import com.ikub.jdbc.springbootjdbc.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +14,22 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryDao categoryDao;
     @Override
-    public List<Categories> getCategories() {
+    public List<Category> getCategories() {
         return categoryDao.getCategories();
     }
 
     @Override
-    public Categories getCategoryById(Long id) {
+    public List<Category> getCategoryById(Long id) {
         return categoryDao.getCategoryById(id);
     }
 
     @Override
-    public Boolean createCategory(Categories category) {
+    public Boolean createCategory(Category category) {
         return categoryDao.createCategory(category);
+    }
+
+    @Override
+    public Boolean deleteCategoryById(Long categoryId) {
+        return categoryDao.deleteCategoryById(categoryId);
     }
 }

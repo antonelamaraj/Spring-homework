@@ -1,31 +1,31 @@
-package com.ikub.jdbc.springbootjdbc.repository;
+package com.ikub.jdbc.springbootjdbc.repository.impl;
 
-import com.ikub.jdbc.springbootjdbc.entity.PostCategories;
+import com.ikub.jdbc.springbootjdbc.mapper.PostCategoryMapper;
+import com.ikub.jdbc.springbootjdbc.entity.Category;
+import com.ikub.jdbc.springbootjdbc.entity.Post;
+import com.ikub.jdbc.springbootjdbc.entity.PostCategory;
+import com.ikub.jdbc.springbootjdbc.repository.PostCategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PostCategoryDaoImpl implements PostCategoryDao{
+public class PostCategoryDaoImpl implements PostCategoryDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public static String GET_POST_CATEGORIES_BY_POST_ID = "SELECT c.id, c.name, c.date_created, c.date_modified FROM categories c join Post_Categories pc ON c.id = pc.category_id WHERE pc.post_id=?";
-
-    public static String GET_POST_CATEGORIES_BY_POST_ID_AND_CATEGORY_ID = "SELECT c.id, c.name, c.date_created, c.date_modified " +
-            "FROM categories c join Post_Categories pc ON c.id = pc.category_id" +
-            "WHERE pc.post_id=?AND pc.category_id=?";
+    private static final String GET_POST_CATEGORY_BY_POST_ID_Q = "SELECT * FROM post_categories pc JOIN posts p ON pc.post_id = p.id JOIN categories c ON pc.category_id = c.id WHERE post_id=?";
+    private static final String GET_POST_CATEGORY_BY_POST_ID_AND_CATEGORY_ID_Q = "SELECT * FROM post_categories pc JOIN posts p ON pc.post_id = p.id JOIN categories c ON pc.category_id = c.id WHERE post_id=? AND category_id=?";
 
     @Override
-    public PostCategories getPostGategoryByPostId(Long postId) {
-        return jdbcTemplate.queryForObject(GET_POST_CATEGORIES_BY_POST_ID, new BeanPropertyRowMapper<>(PostCategories.class), postId);
+    public PostCategory getPostGategoryByPostId(Long postId) {
+        return jdbcTemplate.queryForObject(GET_POST_CATEGORY_BY_POST_ID_Q, new PostCategoryMapper(), postId);
     }
 
     @Override
-    public PostCategories getPostCategoryByPostIdAndCategoryId(Long postId, Long categoryId) {
-        return jdbcTemplate.queryForObject(GET_POST_CATEGORIES_BY_POST_ID_AND_CATEGORY_ID, new BeanPropertyRowMapper<>(PostCategories.class), postId, categoryId);
+    public PostCategory getPostCategoryByPostIdAndCategoryId(Long postId, Long categoryId) {
+        return jdbcTemplate.queryForObject(GET_POST_CATEGORY_BY_POST_ID_AND_CATEGORY_ID_Q, new PostCategoryMapper(), postId, categoryId);
     }
 
 }

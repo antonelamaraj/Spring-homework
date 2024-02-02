@@ -10,11 +10,11 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @ToString
-public class PostCategories {
+public class PostCategory {
 
     private Integer id;
-    private Integer postId;
-    private Integer categoryId;
+    private Post post;
+    private Category category;
     private LocalDate dateCreated;
     private LocalDate dateModified;
 

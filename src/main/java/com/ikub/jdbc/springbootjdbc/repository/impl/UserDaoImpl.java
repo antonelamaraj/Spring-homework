@@ -1,60 +1,74 @@
-package com.ikub.jdbc.springbootjdbc.repository;
+package com.ikub.jdbc.springbootjdbc.repository.impl;
 
-import com.ikub.jdbc.springbootjdbc.entity.Users;
+import com.ikub.jdbc.springbootjdbc.exception.UserAlreadyExistsException;
+import com.ikub.jdbc.springbootjdbc.exception.UserNotFoungException;
+import com.ikub.jdbc.springbootjdbc.mapper.UserMapper;
+import com.ikub.jdbc.springbootjdbc.entity.User;
+import com.ikub.jdbc.springbootjdbc.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public class UserDaoImpl implements UserDao{
+public class UserDaoImpl implements UserDao {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public static String GET_ALL_USERS_U = "SELECT * from users";
-    public static String GET_USER_By_ID = "SELECT * from users where id=?";
+    private static final String GET_USERS_Q = "SELECT * FROM users";
+    private static final String GET_USER_BY_ID_Q = "SELECT * FROM users WHERE id=?";
+    private static final String CREATE_USER_Q = "INSERT INTO users(username,email,password,date_created,date_modified) VALUES(?,?,?,?,?)";
+    private static final String UPDATE_USER_Q = "UPDATE users SET username = ?, email = ?, password = ?,date_created=?, date_modified = ? WHERE id = ?";
+    private static final String DELETE_USER_Q = "DELETE FROM users WHERE id = ?";
 
-    public static String INSERT_USER_U = "INSERT INTO users(username, email,password,date_created, date_modified) VALUES (?,?,?,?,?)";
 
-    public static String UPDATE_USER_U = "UPDATE users SET username=?, email=?, password=?, date_created=?, date_modified=? where ID =?";
-    public static String DELETE_USER_BY_ID = "DELETE from users where id=?";
+    public UserDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
 
     @Override
-    public List<Users> getUsers() {
-        return jdbcTemplate.query(GET_ALL_USERS_U, new BeanPropertyRowMapper<>(Users.class));
+    public List<User> getUsers() {
+        return jdbcTemplate.query(GET_USERS_Q, new UserMapper());
     }
 
     @Override
-    public Users getUserById(Long id) {
-        return jdbcTemplate.queryForObject(GET_USER_By_ID, new BeanPropertyRowMapper<>(Users.class),id);
+    public User getUserById(Long id) {
+        try {
+            return jdbcTemplate.queryForObject(GET_USER_BY_ID_Q, new UserMapper(), id);
+        }catch (EmptyResultDataAccessException ex){
+            throw new UserNotFoungException("User with id: " + id + " does not exists");
+        }
     }
 
     @Override
-    public Boolean createUser(Users user) {
-       var userCreated =  jdbcTemplate.update(INSERT_USER_U, new Object[]{ user.getUsername(), user.getEmail(), user.getPassword(),
-                user.getDateCreated(), user.getDateModified()});
-        return userCreated !=-1? true:false;
+    public Boolean createUser(User user) {
+        try {
+         jdbcTemplate.update(CREATE_USER_Q, new Object[]{user.getUsername(), user.getEmail(), user.getPassword(), user.getDateCreated(), user.getDateModified()}, new GeneratedKeyHolder());
+            return true;
+        } catch (DuplicateKeyException dl) {
+            throw new UserAlreadyExistsException("User already exists");
+        }
     }
-
     @Override
-    public Boolean updateUser(Long id, Users user) {
-        int updateUser = jdbcTemplate.update(UPDATE_USER_U, new Object[]{
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getDateCreated(),
-                user.getDateModified(),
-                id
-        });
-        return updateUser == -1 ? false: true;
+    public Boolean updateUser(Long id, User user) {
+        var userUpdated = jdbcTemplate.update(UPDATE_USER_Q, new Object[]{user.getUsername(), user.getEmail(), user.getPassword(), user.getDateCreated(), user.getDateModified(), id});
+        if (userUpdated < 0){
+            throw new UserNotFoungException("User with id " + id + " is not found/Cannot be updated");
+        }
+        return userUpdated == -1 ? false : true;
     }
 
     @Override
     public Boolean deleteUser(Long id) {
-        int deleteUser = jdbcTemplate.update(DELETE_USER_BY_ID, new Object[]{id});
-
-        return deleteUser == -1? false : true;
+        var userDeleted = jdbcTemplate.update(DELETE_USER_Q, new Object[]{id});
+        if (userDeleted < 0 ){
+            throw new UserNotFoungException("User with id " + id + " is not found/CannotBe deleted");
+        }
+        return userDeleted == -1 ? false : true;
     }
 }

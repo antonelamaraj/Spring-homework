@@ -1,5 +1,4 @@
 package com.ikub.jdbc.springbootjdbc.entity;
-
 import lombok.*;
 
 import java.time.LocalDate;
@@ -10,10 +9,10 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @ToString
-public class Categories {
+public class Category {
 
     private Integer id;
-    private  String name;
+    private String name;
     private LocalDate dateCreated;
     private LocalDate dateModified;
 }

@@ -1,55 +1,60 @@
 package com.ikub.jdbc.springbootjdbc.controller;
 
+import com.ikub.jdbc.springbootjdbc.entity.Category;
 import com.ikub.jdbc.springbootjdbc.entity.Post;
-import com.ikub.jdbc.springbootjdbc.entity.Users;
+import com.ikub.jdbc.springbootjdbc.entity.User;
+import com.ikub.jdbc.springbootjdbc.service.CategoryService;
 import com.ikub.jdbc.springbootjdbc.service.PostService;
 import com.ikub.jdbc.springbootjdbc.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/users")
 public class UserRestController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private PostService postService;
 
-    @GetMapping("/users")
-    public List<Users> getAllUsers() {
+    @Autowired
+    private CategoryService categoryService;
+
+    @GetMapping
+    public List<User> getAllUsers() {
         return userService.getUsers();
     }
 
-    @GetMapping("/users/{userId}")
-    public Users getUser(@PathVariable long userId) {
-        Users theUser = userService.getUserById(userId);
+    @GetMapping("/{userId}")
+    public User getUserById(@PathVariable long userId) {
+        User theUser = userService.getUserById(userId);
+
         return theUser;
     }
 
-    /*************Post*************************/
-    @GetMapping("/posts")
-    public List<Post> getAllPosts() {
-        return postService.getPosts();
+    @PostMapping
+    public ResponseEntity<Boolean> addUser(@RequestBody User newUser){
+        newUser.setId(0);
+     boolean u= userService.createUser(newUser);
+        return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+    //update user
+    @PutMapping("/{id}")
+    public ResponseEntity<Boolean> updateUser(@PathVariable Long id, @RequestBody User newUser){
+        newUser.setId(0);
+        boolean userUpdated= userService.updateUser(id, newUser);
+        return new ResponseEntity<>(userUpdated, HttpStatus.OK);
     }
 
-    @GetMapping("/posts/{postId}")
-    public Post getPost(@PathVariable long postId) {
-        Post thePost = postService.getPostsById(postId);
-        return thePost;
+    //delete user
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteUser(@PathVariable Long id){
+        boolean userDeleted= userService.deleteUser(id);
+        return new ResponseEntity<>(userDeleted, HttpStatus.OK);
     }
-
-    @GetMapping("/postsOfUser/{userId}")
-    public List<Post> getPosts(@PathVariable long userId) {
-        List<Post> thePost = postService.getPostsByUserId(userId);
-        return thePost;
-    }
-
 
 
 }
